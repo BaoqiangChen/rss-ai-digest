@@ -1,0 +1,16 @@
+{
+  "name": "rss-ai-digest",
+  "version": "1.3.0",
+  "private": true,
+  "description": "Thunderbird add-on: summarise RSS feeds by topic with DeepSeek or Claude and email the digest from your own account.",
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "test:ui": "node test/ui-check.js",
+    "lint": "npx -y addons-linter@7.1.0 --output text .",
+    "build": "sh scripts/build-xpi.sh"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3",
+    "playwright": "^1.63.0"
+  }
+}

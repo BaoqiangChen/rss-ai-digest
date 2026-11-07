@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="../icons/icon-32.png" alt="" width="20" height="20">
+    <strong>RSS AI Digest</strong>
+    <span class="spacer"></span>
+    <button id="settings" class="ghost" title="Settings">⚙ Settings</button>
+  </header>
+  <p id="setup" class="setup" hidden></p>
+  <ul id="list"></ul>
+  <p id="empty" class="muted center" hidden>No topics yet. Open Settings to create one.</p>
+  <script src="../lib/util.js"></script>
+  <script src="../lib/store.js"></script>
+  <script src="../lib/schedule.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

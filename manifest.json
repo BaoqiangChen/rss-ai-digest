@@ -1,0 +1,62 @@
+{
+  "manifest_version": 2,
+  "name": "RSS AI Digest",
+  "version": "1.3.0",
+  "description": "Summarise your RSS feeds and newsletter folders by topic with DeepSeek or Claude, then email the digest from your own Thunderbird account.",
+  "author": "Baoqiang Chen",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "rss-claude-digest@baoqiang.local",
+      "strict_min_version": "128.0"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "64": "icons/icon-64.png",
+    "128": "icons/icon-128.png"
+  },
+  "background": {
+    "scripts": [
+      "lib/util.js",
+      "lib/store.js",
+      "lib/claude.js",
+      "lib/deepseek.js",
+      "lib/ai.js",
+      "lib/sources.js",
+      "lib/digest.js",
+      "lib/mailer.js",
+      "lib/schedule.js",
+      "background.js"
+    ]
+  },
+  "browser_action": {
+    "default_title": "RSS AI Digest",
+    "default_label": "Digest",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "64": "icons/icon-64.png"
+    }
+  },
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "permissions": [
+    "accountsRead",
+    "messagesRead",
+    "compose",
+    "compose.send",
+    "storage",
+    "alarms",
+    "notifications",
+    "https://api.deepseek.com/*",
+    "https://api.anthropic.com/*"
+  ],
+  "optional_permissions": [
+    "<all_urls>",
+    "messages.send"
+  ]
+}

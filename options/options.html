@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RSS AI Digest – Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header class="top">
+    <img src="../icons/icon-64.png" alt="" width="32" height="32">
+    <div>
+      <h1>RSS AI Digest</h1>
+      <p class="muted">Summarise your feeds by topic with DeepSeek or Claude and email the digest from your own account.</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. AI provider -->
+    <section class="card">
+      <h2><span class="step">1</span> Connect your AI model</h2>
+      <div class="row three">
+        <label>Provider
+          <select id="provider">
+            <option value="deepseek">DeepSeek</option>
+            <option value="claude">Claude (Anthropic)</option>
+          </select>
+        </label>
+        <label class="span2"><span id="keyLabel">API key</span>
+          <div class="inline">
+            <input id="apiKey" type="password" autocomplete="off" spellcheck="false">
+            <button id="toggleKey" type="button" class="ghost" title="Show / hide">Show</button>
+            <button id="connect" type="button" class="primary">Connect</button>
+          </div>
+        </label>
+      </div>
+      <p id="connStatus" class="status muted">Not connected.</p>
+      <p class="hint"><span id="keyHint"></span> <a id="keyLink" href="#" target="_blank" rel="noopener">Get a key ↗</a></p>
+      <div class="row three">
+        <label>Model
+          <select id="model"></select>
+        </label>
+        <label>Thinking effort
+          <select id="effort"></select>
+        </label>
+        <label>Max output tokens
+          <input id="maxTokens" type="number" min="2000" max="128000" step="1000">
+        </label>
+      </div>
+      <div class="row three">
+        <label>Max characters per article
+          <input id="maxChars" type="number" min="200" max="20000" step="100">
+        </label>
+      </div>
+    </section>
+
+    <!-- 2. Email -->
+    <section class="card">
+      <h2><span class="step">2</span> Sending</h2>
+      <div class="row three">
+        <label class="span2">Default sender (your Thunderbird identity)
+          <select id="defaultIdentity"></select>
+        </label>
+        <label class="check self-end"><input id="notify" type="checkbox"> Desktop notifications</label>
+      </div>
+      <div class="row">
+        <div class="grow">
+          <label class="check"><input id="silentSend" type="checkbox"> Send silently in the background (no compose window)</label>
+          <div class="inline mt-s">
+            <span id="silentStatus" class="muted">Checking…</span>
+            <button id="grantSilent" type="button" class="ghost" hidden>Allow</button>
+          </div>
+          <p class="hint">Uses Thunderbird's background sending (Thunderbird 153 or newer). Thunderbird asks you once to allow the add-on to send messages on your behalf.
+            On older versions the compose window opens minimised and closes by itself. Topics set to “Open for review” always open the window.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="grow">
+          <div class="label">Website access for feed URLs</div>
+          <div class="inline">
+            <span id="permStatus" class="muted">Checking…</span>
+            <button id="grantPerm" type="button" class="ghost">Allow</button>
+          </div>
+          <p class="hint">Only needed for feeds you paste as URLs. Feeds you already follow in Thunderbird's Feeds account need nothing extra.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Topics -->
+    <section class="card">
+      <h2><span class="step">3</span> Topics <span class="muted small">– your custom summary themes</span></h2>
+      <div class="topics">
+        <aside>
+          <ul id="topicList" class="topic-list"></ul>
+          <button id="newTopic" type="button" class="primary block">+ New topic</button>
+          <div class="label mt">Start from a template</div>
+          <div id="templates" class="templates"></div>
+        </aside>
+
+        <form id="editor" class="editor" autocomplete="off" hidden>
+          <div class="row three">
+            <label class="span2">Topic name
+              <input id="t_name" required maxlength="80">
+            </label>
+            <div class="row two tight">
+              <label>Colour
+                <input id="t_color" type="color">
+              </label>
+              <label class="check self-end"><input id="t_enabled" type="checkbox"> Enabled</label>
+            </div>
+          </div>
+
+          <fieldset>
+            <legend>What should the AI look for?</legend>
+            <label>I'm interested in
+              <textarea id="t_interests" rows="4" placeholder="e.g. CAR-T and in-vivo CAR approaches, clinical readouts, FDA/EMA decisions, new immune-engineering tools…"></textarea>
+            </label>
+            <label>Not interested in
+              <textarea id="t_avoid" rows="2" placeholder="e.g. diet tips, stock-price chatter, press releases without data"></textarea>
+            </label>
+            <div class="row two">
+              <label>Sections (optional, comma-separated)
+                <input id="t_sections" placeholder="Research, Clinical & regulatory, Industry">
+              </label>
+              <label>Pre-filter keywords (optional)
+                <input id="t_keywords" placeholder="Only send articles containing any of these">
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Sources</legend>
+            <div class="label">Thunderbird folders <span class="muted small">(Feeds accounts first; any mail folder, e.g. newsletters, works too)</span></div>
+            <div id="folderTree" class="folder-tree"><span class="muted">Loading folders…</span></div>
+            <label class="mt">Feed URLs <span class="muted small">(one per line — commas or spaces also work)</span>
+              <textarea id="t_feedUrls" rows="3" spellcheck="false" placeholder="https://www.nature.com/nature.rss"></textarea>
+            </label>
+            <div class="row three">
+              <label>Look back (hours)
+                <input id="t_lookback" type="number" min="1" max="720">
+              </label>
+              <label>Max articles sent to the AI
+                <input id="t_maxArticles" type="number" min="5" max="400">
+              </label>
+              <label class="check self-end"><input id="t_onlyNew" type="checkbox"> Skip articles already in a digest</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Summary</legend>
+            <div class="row three">
+              <label class="span2">Coverage
+                <select id="t_coverage">
+                  <option value="perFeed">Every feed – top stories from each feed</option>
+                  <option value="interests">Only stories that match my interests</option>
+                </select>
+              </label>
+              <label data-cov="perFeed">Stories per feed
+                <input id="t_perFeed" type="number" min="1" max="20">
+              </label>
+            </div>
+            <div class="row three">
+              <label>Style
+                <select id="t_style">
+                  <option value="brief">Brief – 1–2 sentences</option>
+                  <option value="standard">Standard – 3–4 sentences</option>
+                  <option value="detailed">Detailed – short paragraph</option>
+                  <option value="executive">Executive – implications</option>
+                </select>
+              </label>
+              <label>Language
+                <input id="t_language" list="languages">
+                <datalist id="languages">
+                  <option value="English"></option>
+                  <option value="Simplified Chinese (中文)"></option>
+                  <option value="Deutsch"></option>
+                  <option value="Français"></option>
+                  <option value="English and Chinese side by side"></option>
+                </datalist>
+              </label>
+              <label data-cov="interests">Minimum relevance
+                <select id="t_minRelevance">
+                  <option value="2">2 – include loosely related</option>
+                  <option value="3">3 – clearly relevant</option>
+                  <option value="4">4 – important only</option>
+                  <option value="5">5 – must-reads only</option>
+                </select>
+              </label>
+            </div>
+            <label>Extra instructions for the AI (optional)
+              <textarea id="t_extra" rows="2" placeholder="e.g. Mention trial phase and patient numbers. Flag anything about Swiss companies."></textarea>
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Email</legend>
+            <div class="row two">
+              <label>Send from
+                <select id="t_identity"></select>
+              </label>
+              <label>To (comma-separated; empty = yourself)
+                <input id="t_to" placeholder="me@example.com, team@example.com">
+              </label>
+            </div>
+            <label>Subject <span class="muted small">({topic}, {date}, {count})</span>
+              <input id="t_subject">
+            </label>
+            <div class="checks">
+              <label class="check"><input id="t_review" type="checkbox"> Open for review instead of sending</label>
+              <label class="check"><input id="t_plainText" type="checkbox"> Plain-text email</label>
+              <label class="check"><input id="t_sendWhenEmpty" type="checkbox"> Send even when nothing is relevant</label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Schedule</legend>
+            <div class="row three">
+              <label>Run
+                <select id="t_schedType">
+                  <option value="manual">Only when I click Run</option>
+                  <option value="daily">On chosen days at a time</option>
+                  <option value="interval">Every N hours</option>
+                </select>
+              </label>
+              <label data-sched="daily">Time
+                <input id="t_time" type="time">
+              </label>
+              <label data-sched="interval">Hours
+                <input id="t_hours" type="number" min="1" max="168">
+              </label>
+            </div>
+            <div class="days" data-sched="daily" id="t_days"></div>
+            <p class="hint">Scheduled digests run while Thunderbird is open. A run missed in the last 12 h is caught up shortly after Thunderbird starts.</p>
+          </fieldset>
+
+          <div class="actions">
+            <button id="save" type="button" class="primary">Save topic</button>
+            <button id="run" type="button">Run now</button>
+            <button id="preview" type="button" title="Build the digest and open it in a compose window without sending">Preview</button>
+            <span class="spacer"></span>
+            <button id="resetSeen" type="button" class="ghost" title="Forget which articles were already included">Reset memory</button>
+            <button id="delete" type="button" class="danger ghost">Delete</button>
+          </div>
+          <p id="topicStatus" class="status"></p>
+        </form>
+
+        <div id="emptyEditor" class="empty muted">Create a topic, or start from a template on the left.</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="../lib/util.js"></script>
+  <script src="../lib/store.js"></script>
+  <script src="../lib/sources.js"></script>
+  <script src="../lib/digest.js"></script>
+  <script src="../lib/mailer.js"></script>
+  <script src="../lib/schedule.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
